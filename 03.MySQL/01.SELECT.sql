@@ -42,7 +42,7 @@ SELECT * FROM city WHERE countrycode='KOR'
 # 전라남북도의 도시
 SELECT * FROM city WHERE countrycode='KOR' AND district LIKE 'Cholla%';
 
-# 순서
+/* 순서 */
 # 인구수가 800만 이상의 도시를 인구수의 내림차순으로 조회
 SELECT * FROM city WHERE population>8000000 ORDER BY population DESC;
 # 한국의 도시를 district는 오름차순, Name도 오름차순
@@ -53,13 +53,67 @@ SELECT * FROM city WHERE countrycode='KOR'
 SELECT * FROM city WHERE countrycode='KOR' 
 	ORDER BY district, population DESC;
 
-# 함수
+/* 함수 */
 # count(*) - 건수
 SELECT COUNT(*) FROM city WHERE countrycode='KOR';
 SELECT AVG(population) FROM city WHERE countrycode='KOR';
 SELECT AVG(population) AS average FROM city WHERE countrycode='KOR';	# Aliasing
 SELECT avg(population), max(population), min(population) FROM city 
 	WHERE countrycode='KOR';
+
+/* 그룹 */
+# 광역시도별 인구수
+SELECT district, SUM(population) FROM city WHERE countrycode='KOR'
+	GROUP BY district;
+# 광역시도별 인구수를 내림차순으로
+SELECT district, SUM(population) FROM city WHERE countrycode='KOR'
+	GROUP BY district ORDER BY SUM(population) DESC;
+# 전라남도의 도시
+SELECT GROUP_CONCAT(NAME) FROM city WHERE district='Chollanam';
+# 한국의 광역시도
+SELECT GROUP_CONCAT(DISTINCT district) FROM city WHERE countrycode='KOR';
+# 광역시도별 도시의 갯수가 많은 순서로
+SELECT district, COUNT(*) FROM city WHERE countrycode='KOR'
+	GROUP BY district ORDER BY COUNT(*) DESC, district;
+# 광역시도별 도시의 갯수가 5개 이상
+SELECT district, COUNT(*) FROM city WHERE countrycode='KOR'
+	GROUP BY district HAVING COUNT(*)>=5;
+# 광역시도별 도시의 갯수가 5개 이상을 내림차순으로 정렬
+SELECT district, COUNT(*) FROM city WHERE countrycode='KOR'
+	GROUP BY district HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC;
+# 도시의 갯수가 100개 이상인 국가를 도시갯수 내림차순으로 정렬
+SELECT countrycode, COUNT(*) FROM city
+	GROUP BY countrycode HAVING COUNT(*)>=100 ORDER BY COUNT(*) DESC;
+
+/* 갯수 */
+# 도시의 갯수가 많은 5개 국가코드
+SELECT countrycode, COUNT(*) FROM city
+	GROUP BY countrycode ORDER BY COUNT(*) DESC
+	LIMIT 5;
+# 도시의 인구가 많은 10개 국가코드
+SELECT countrycode, SUM(population) FROM city
+	GROUP BY countrycode ORDER BY SUM(population) DESC
+	LIMIT 10;
+# 도시의 인구가 많은 국가코드(6위 - 10위)
+SELECT countrycode, SUM(population) FROM city
+	GROUP BY countrycode ORDER BY SUM(population) DESC
+	LIMIT 5 OFFSET 5;
+
+/* Join */
+# 도시의 인구가 많은 국가(6위 - 10위)
+SELECT country.name, SUM(city.population) FROM city
+	INNER JOIN country ON city.CountryCode=country.Code
+	GROUP BY city.countrycode ORDER BY SUM(city.population) DESC
+	LIMIT 5 OFFSET 5;
+# 인구가 많은 전세계 도시 Top 10의 국가명, 도시명, 인구수
+SELECT country.Name, city.Name, city.Population FROM city
+	JOIN country ON city.CountryCode=country.Code
+	ORDER BY city.Population DESC LIMIT 10;
+
+
+
+
+
 
 
 
