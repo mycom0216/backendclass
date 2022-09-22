@@ -1,0 +1,65 @@
+/*
+ * 데이터 조작 언어(DML: Data Manipulation Language)
+ */
+/* 1. 조회 */
+USE world;
+SHOW TABLES;
+DESC city;      # 주석
+
+/*
+SELECT 필드명 FROM 테이블명
+    WHERE 조건
+    ORDER BY 필드명 순서
+    LIMIT 숫자 OFFSET 숫자
+    GROUP BY 필드명
+    HAVING 그룹 조건
+    JOIN 테이블명
+    ON 조인 조건;
+*/
+
+SELECT * FROM city;
+SELECT COUNT(*) FROM city;
+
+/* 조회조건 */
+SELECT * FROM city WHERE countrycode='KOR';		# 필드명에 대소문자 구별은 안함
+
+SELECT * FROM city WHERE District='Kwangju';
+SELECT `Name`, Population FROM city WHERE CountryCode='KOR';
+SELECT `name`, population FROM city WHERE countrycode='KOR' AND population>1000000;
+
+SELECT distinct district FROM city WHERE countrycode='KOR';     
+# 호남지역 도시
+SELECT * FROM city WHERE district='Kwangju' 
+	OR district='Chollabuk' OR district='Chollanam';
+# 한국의 100만보다 큰 도시중에 인구수가 짝수인 도시
+SELECT * FROM city WHERE countrycode='KOR' 
+	AND population>1000000 AND population%2=0;
+# 한국의 100만보다 크고 200만보다 작은 도시
+SELECT * FROM city WHERE countrycode='KOR' 
+	AND population>1000000 AND population<2000000;
+SELECT * FROM city WHERE countrycode='KOR' 
+	AND population BETWEEN 1000000 AND 2000000;
+# 전라남북도의 도시
+SELECT * FROM city WHERE countrycode='KOR' AND district LIKE 'Cholla%';
+
+# 순서
+# 인구수가 800만 이상의 도시를 인구수의 내림차순으로 조회
+SELECT * FROM city WHERE population>8000000 ORDER BY population DESC;
+# 한국의 도시를 district는 오름차순, Name도 오름차순
+SELECT * FROM city WHERE countrycode='KOR' 
+	ORDER BY district, NAME;
+# 광역시도별로 도시 인구수가 많은 것부터 보여줘라.
+# 한국의 도시를 district는 오름차순, 인구수는 내림차순
+SELECT * FROM city WHERE countrycode='KOR' 
+	ORDER BY district, population DESC;
+
+# 함수
+# count(*) - 건수
+SELECT COUNT(*) FROM city WHERE countrycode='KOR';
+SELECT AVG(population) FROM city WHERE countrycode='KOR';
+SELECT AVG(population) AS average FROM city WHERE countrycode='KOR';	# Aliasing
+SELECT avg(population), max(population), min(population) FROM city 
+	WHERE countrycode='KOR';
+
+
+
